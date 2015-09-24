@@ -48,7 +48,7 @@ function! s:gReplace()
         return
     endif
 
-    let change_all = v:cmdbang
+    let change_all = 1
 
     let changeset = {}
 
@@ -92,7 +92,7 @@ function! s:gReplace()
         endif
         silent! exe 'hide edit ' . f
 
-        let change_buf_all = 0   " Accept all the changes in this buffer
+        let change_buf_all = 1   " Accept all the changes in this buffer
 
         for lnum in keys(f_l)
             exe lnum
@@ -114,7 +114,7 @@ function! s:gReplace()
 
             let e_idx1 += 2
 
-            if (s_idx + 1) == e_idx1 
+            if (s_idx + 1) == e_idx1
                 " If there is nothing to highlight, then highlight the
                 " last character
                 let e_idx1 += 1
@@ -156,6 +156,9 @@ function! s:gReplace()
             finally
                 2match none
             endtry
+
+            " execute changes
+            silent! execute 'write'
         endfor
     endfor
 endfunction
@@ -231,7 +234,7 @@ function! s:gSearch(type, ...)
     endif
 
     let pattern   = ''
-    let filenames = ''
+    let filenames = '*'
 
     " Parse the arguments
     " grep command-line flags are specified using the "-flag" format
@@ -263,11 +266,7 @@ function! s:gSearch(type, ...)
                     \ g:Greplace_Shell_Quote_Char
     endif
 
-    if a:type == 'grep'
-        if filenames == ''
-            let filenames = input('Search in files: ', '*', 'file')
-        endif
-    elseif a:type == 'args'
+    if a:type == 'args'
         " Search in all the filenames in the argument list
         let arg_cnt = argc()
 
@@ -290,11 +289,6 @@ function! s:gSearch(type, ...)
                 let filenames .= ' ' . bufname(i)
             endif
         endfor
-    endif
-
-    if filenames == ''
-        call s:warn_msg('Error: No valid file names')
-        return
     endif
 
     " Use ! after grep, so that Vim doesn't automatically jump to the
