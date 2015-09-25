@@ -299,6 +299,7 @@ function! s:gSearch(type, ...)
     silent! exe grep_cmd
 
     call s:gReplace_show_matches()
+    :redraw!
 endfunction
 
 command! -nargs=0 Gqfopen call s:gReplace_show_matches()
